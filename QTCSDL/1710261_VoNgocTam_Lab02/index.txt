@@ -1,0 +1,785 @@
+<h1>hello</h1>
+
+
+<?php
+class TableRows extends RecursiveIteratorIterator
+{
+  function __construct($it)
+  {
+    parent::__construct($it, self::LEAVES_ONLY);
+  }
+
+  function current()
+  {
+    return "<td style='width:150px;border:1px solid black;'>"
+      . parent::current() . "</td>";
+  }
+
+  function beginChildren()
+  {
+    echo "<tr>";
+  }
+
+  function endChildren()
+  {
+    echo "</tr>" . "\n";
+  }
+}
+
+$servername = "localhost";
+$username = "root";
+$password = "";
+$dbname = "nganhang";
+
+try {
+  $conn = new PDO("mysql:host=$servername;dbname=$dbname", $username, $password);
+  // set the PDO error mode to exception
+  $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+  //   $sql = "CREATE TABLE TaiKhoanGui1 (
+  //     MaKH INT UNSIGNED, 
+  //     MaCN VARCHAR(6) NOT NULL,
+  //     SoTKG VARCHAR(7) NOT NULL,
+  //     SoTienGui BIGINT UNSIGNED,
+  //     PRIMARY KEY(MaCN,SoTKG)
+  // )";
+
+  $MaKH = "";
+  $MaCN = "";
+  $SoTKG = "";
+  $SoTienGui = "";
+  if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    if (isset($_POST["MaKH"])) {
+      $MaKH = $_POST['MaKH'];
+    }
+    if (isset($_POST["MaCN"])) {
+      $MaCN = $_POST['MaCN'];
+    }
+    if (isset($_POST["SoTKG"])) {
+      $SoTKG = $_POST['SoTKG'];
+    }
+    if (isset($_POST["SoTienGui"])) {
+      $SoTienGui = $_POST['SoTienGui'];
+    }
+    $sql = "INSERT INTO TaiKhoanGui VALUES ('$MaKH', '$MaCN', '$SoTKG', '$SoTienGui')";
+  }
+
+
+  // sử dụng exec() vì không có kết quả nào được trả về
+  $conn->exec($sql);
+  echo "Table TaiKhoanGui created successfully";
+} catch (PDOException $e) {
+  // echo $sql . "<br>" . $e->getMessage();
+}
+
+echo "<table style='border: solid 1px black;'>";
+echo "<tr><th>Mã khách hàng</th><th>Mã chi nhánh</th><th>Mã số tài khoàn gửi</th><th>Số tiền gửi</th></tr>";
+$stmt = $conn->prepare("SELECT * FROM TaiKhoanGui");
+$stmt->execute();
+
+// thiết lập mảng kết quả thành mảng kết hợp
+$result = $stmt->setFetchMode(PDO::FETCH_ASSOC);
+foreach (new TableRows(new RecursiveArrayIterator($stmt->fetchAll())) as $k => $v) {
+  echo $v;
+}
+echo "</table>";
+$conn = null;
+?>
+
+<form action="" method="post">
+  <table>
+    <tr>
+      <th>Mã khách hàng:</th>
+      <td><input type="number" name="MaKH" value=""></td>
+    </tr>
+
+    <tr>
+      <th>Mã chi nhánh:</th>
+      <td><input type="text" name="MaCN" value=""></td>
+    </tr>
+
+    <tr>
+      <th>Mã số tài khoản gửi:</th>
+      <td><input type="text" name="SoTKG" value=""></td>
+    </tr>
+
+    <tr>
+      <th>Số tiền gửi:</th>
+      <td><input type="number" name="SoTienGui"></input></td>
+    </tr>
+  </table>
+  <button type="submit">Gửi</button>
+</form>
+
+<?php
+require_once 'pdoconfig.php';
+$conn = new PDO("mysql:host=$servername;dbname=$dbname", $username, $password);
+$conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+$c11 = $conn->prepare("SELECT a.TenNH
+FROM nganhang a, chinhanh b
+WHERE a.MaNH=b.MaNH AND b.ThanhPhoCN='Đà Lạt'");
+$c11->execute();
+$c11->setFetchMode(PDO::FETCH_ASSOC);
+$result = $c11->fetchAll();
+echo "1.1. Tìm tên tất cả các ngân hàng có chi nhánh ngân hàng ở thanh phố “Da Lat”.";
+echo "<br>";
+foreach ($result as $item) {
+  echo $item['TenNH'];
+  echo "<br>";
+}
+
+$c12 = $conn->prepare("SELECT b.ThanhPhoCN
+FROM nganhang a, chinhanh b
+WHERE a.MaNH=b.MaNH AND a.TenNH='Ngân Hàng Công Thương'");
+$c12->execute();
+$c12->setFetchMode(PDO::FETCH_ASSOC);
+$result = $c12->fetchAll();
+echo "1.2. Tìm tất cả những thành phố mà có chi nhánh của ngân hàng công thương.";
+echo "<br>";
+foreach ($result as $item) {
+  echo $item['ThanhPhoCN'];
+  echo "<br>";
+}
+
+$c13 = $conn->prepare("SELECT b.MaCN , b.TaiSan
+FROM nganhang a, chinhanh b
+WHERE a.MaNH=b.MaNH AND a.TenNH='Ngân Hàng Công Thương' AND b.ThanhPhoCN='TP HCM'");
+$c13->execute();
+$c13->setFetchMode(PDO::FETCH_ASSOC);
+$result = $c13->fetchAll();
+echo "1.3. Tìm thông tin về tất cả các chi nhánh của ngân hàng công thương có địa điểm ở TP
+HCM.";
+echo "<br>";
+foreach ($result as $item) {
+  echo $item['MaCN'] . "," .  $item['TaiSan'];
+  echo "<br>";
+}
+
+$c14 = $conn->prepare("SELECT a.TenNH, b.MaCN,b.ThanhPhoCN, b.TaiSan
+FROM nganhang a, chinhanh b
+WHERE a.MaNH=b.MaNH ORDER BY b.MaNH");
+$c14->execute();
+$c14->setFetchMode(PDO::FETCH_ASSOC);
+$result = $c14->fetchAll();
+echo "1.4. Xuất thông tin từng ngân hàng và chi nhánh của nó.";
+echo "<br>";
+foreach ($result as $item) {
+  echo $item['TenNH'] . ", " .  $item['MaCN'] . ", " . $item['ThanhPhoCN'] . ", " . $item['TaiSan'];
+  echo "<br>";
+}
+
+$c15 = $conn->prepare("SELECT a.TenKH, a.DiaChi
+FROM khachhang a
+WHERE a.DiaChi LIKE '%Ha Noi'");
+$c15->execute();
+$c15->setFetchMode(PDO::FETCH_ASSOC);
+$result = $c15->fetchAll();
+echo "1.5. Tìm khách hàng mà địa chỉ của họ ở 'Ha Noi'.";
+echo "<br>";
+foreach ($result as $item) {
+  echo $item['TenKH'] . ", địa chỉ: " .  $item['DiaChi'];
+  echo "<br>";
+}
+
+$c16 = $conn->prepare("SELECT a.TenKH, a.DiaChi
+FROM khachhang a
+WHERE a.TenKH LIKE '%Son'");
+$c16->execute();
+$c16->setFetchMode(PDO::FETCH_ASSOC);
+$result = $c16->fetchAll();
+echo "1.6. Tìm các khách hàng có tên Son.";
+echo "<br>";
+foreach ($result as $item) {
+  echo $item['TenKH'] . ", địa chỉ: " .  $item['DiaChi'];
+  echo "<br>";
+}
+
+$c17 = $conn->prepare("SELECT a.TenKH, a.DiaChi
+FROM khachhang a
+WHERE a.DiaChi LIKE '%Tran Hung Dao%'");
+$c17->execute();
+$c17->setFetchMode(PDO::FETCH_ASSOC);
+$result = $c17->fetchAll();
+echo "1.7. Tìm các khách hàng mà địa chỉ của họ ở đường 'Tran Hung Dao'.";
+echo "<br>";
+foreach ($result as $item) {
+  echo $item['TenKH'] . ", địa chỉ: " .  $item['DiaChi'];
+  echo "<br>";
+}
+
+$c18 = $conn->prepare("SELECT a.TenKH, a.DiaChi
+FROM khachhang a
+WHERE a.TenKH LIKE '%Thao'");
+$c18->execute();
+$c18->setFetchMode(PDO::FETCH_ASSOC);
+$result = $c18->fetchAll();
+echo "1.8. Tìm các khách hàng có tên 'Thao'.";
+echo "<br>";
+foreach ($result as $item) {
+  echo $item['TenKH'] . ", địa chỉ: " .  $item['DiaChi'];
+  echo "<br>";
+}
+
+$c19 = $conn->prepare("SELECT a.MaKH, a.TenKH, a.DiaChi
+FROM khachhang a
+WHERE a.MaKH LIKE '11%' AND a.DiaChi LIKE '%TP HCM'");
+$c19->execute();
+$c19->setFetchMode(PDO::FETCH_ASSOC);
+$result = $c19->fetchAll();
+echo "1.9. Tìm khách hàng có mã số bắt đầu là '11' và ở TP HCM.";
+echo "<br>";
+foreach ($result as $item) {
+  echo $item['MaKH'] . ", " .  $item['TenKH'] . ", " . $item['DiaChi'];
+  echo "<br>";
+}
+
+$c110 = $conn->prepare("SELECT b.TenNH, a.ThanhPhoCN, a.TaiSan
+FROM chinhanh a, nganhang b
+WHERE a.MaNH=b.MaNH ORDER BY a.TaiSan DESC, a.ThanhPhoCN ASC");
+$c110->execute();
+$c110->setFetchMode(PDO::FETCH_ASSOC);
+$result = $c110->fetchAll();
+echo "1.10. Xuất thông tin về tên ngân hàng, thành phố chi nhánh và tài sản theo thứ tự tăng của
+tài sản của chi nhánh, nếu tài sản trùng nhau thì sắp tăng theo thành phố chi nhánh.";
+echo "<br>";
+foreach ($result as $item) {
+  echo $item['TenNH'] . ", " .  $item['ThanhPhoCN'] . ", " . $item['TaiSan'];
+  echo "<br>";
+}
+
+$c111 = $conn->prepare("SELECT b.TenNH, a.ThanhPhoCN, a.TaiSan
+FROM chinhanh a, nganhang b
+WHERE a.MaNH=b.MaNH AND a.TaiSan > 3000000000 AND a.TaiSan < 5000000000");
+$c111->execute();
+$c111->setFetchMode(PDO::FETCH_ASSOC);
+$result = $c111->fetchAll();
+echo "1.11. Tìm thông tin tất cả những thông tin về ngân hàng và chi nhánh ngân hàng mà tài sản
+3000000000 < tài sản < 5000000000.";
+echo "<br>";
+foreach ($result as $item) {
+  echo $item['TenNH'] . ", " .  $item['ThanhPhoCN'] . ", " . $item['TaiSan'];
+  echo "<br>";
+}
+
+$c112 = $conn->prepare("SELECT b.TenNH, AVG(a.TaiSan) as TrungBinh
+FROM chinhanh a, nganhang b
+WHERE b.MaNH=a.MaNH
+GROUP BY a.MaNH");
+$c112->execute();
+$c112->setFetchMode(PDO::FETCH_ASSOC);
+$result = $c112->fetchAll();
+echo "1.12. Cho biết tài sản trung bình chi nhánh của từng ngân hàng.";
+echo "<br>";
+foreach ($result as $item) {
+  echo $item['TenNH'] . ", " .  $item['TrungBinh'];
+  echo "<br>";
+}
+
+$c113 = $conn->prepare("SELECT b.TenNH, c.TenKH
+FROM chinhanh a, nganhang b, khachhang c, taikhoanvay d
+WHERE b.MaNH=a.MaNH AND a.MaCN=d.MaCN AND c.MaKH=d.MaKH AND b.TenNH='Ngân Hàng Công Thương' AND c.TenKH LIKE '%Thao'");
+$c113->execute();
+$c113->setFetchMode(PDO::FETCH_ASSOC);
+$result = $c113->fetchAll();
+echo "1.13. Tìm thông tin của khách hàng có tài khoản vay tại ngân hàng công thương và có tên là
+'Thao'.";
+echo "<br>";
+foreach ($result as $item) {
+  echo $item['TenNH'] . ", " .  $item['TenKH'];
+  echo "<br>";
+}
+
+$c114 = $conn->prepare("SELECT b.TenNH, SUM(a.TaiSan) as TongTaiSan
+FROM chinhanh a, nganhang b
+WHERE b.MaNH=a.MaNH
+GROUP BY a.MaNH");
+$c114->execute();
+$c114->setFetchMode(PDO::FETCH_ASSOC);
+$result = $c114->fetchAll();
+echo "1.14. Xuất thông tin về tên ngân hàng và tổng tài sản của các ngân hàng.";
+echo "<br>";
+foreach ($result as $item) {
+  echo $item['TenNH'] . ", " .  $item['TongTaiSan'];
+  echo "<br>";
+}
+
+$c115 = $conn->prepare("SELECT a.MaCN, a.TaiSan
+FROM chinhanh a
+WHERE a.TaiSan=(SELECT MAX(a.TaiSan) FROM chinhanh a)");
+$c115->execute();
+$c115->setFetchMode(PDO::FETCH_ASSOC);
+$result = $c115->fetchAll();
+echo "1.15. Tìm MaCN và TaiSan của chi nhánh có tài sản lớn nhất.";
+echo "<br>";
+foreach ($result as $item) {
+  echo $item['MaCN'] . ", " .  $item['TaiSan'];
+  echo "<br>";
+}
+
+$c116 = $conn->prepare("SELECT b.TenNH, c.TenKH
+FROM chinhanh a, nganhang b, khachhang c, TaiKhoanGui d
+WHERE b.MaNH=a.MaNH AND a.MaCN=d.MaCN AND c.MaKH=d.MaKH AND b.TenNH='Ngân Hàng Á Châu'");
+$c116->execute();
+$c116->setFetchMode(PDO::FETCH_ASSOC);
+$result = $c116->fetchAll();
+echo "1.16. Liệt kê tất cả những những khách hành có tài khoản gởi tại chi nhánh ngân hàng 'A
+Chau'.";
+echo "<br>";
+foreach ($result as $item) {
+  echo $item['TenNH'] . ", " .  $item['TenKH'];
+  echo "<br>";
+}
+
+$c117 = $conn->prepare("SELECT b.TenNH, c.SoTKV, c.SoTienVay
+FROM chinhanh a, nganhang b, taikhoanvay c
+WHERE a.MaNH=b.MaNH AND a.MaCN=c.MaCN AND c.SoTienVay > 1200000 AND b.TenNH='Ngân Hàng Ngoại Thương'");
+$c117->execute();
+$c117->setFetchMode(PDO::FETCH_ASSOC);
+$result = $c117->fetchAll();
+echo "1.17. Tìm tất cả các số tài khoản vay thực hiện tại chi nhánh của ngân hàng ngoại thương
+mà số tiền vay > 1200000.";
+echo "<br>";
+foreach ($result as $item) {
+  echo $item['TenNH'] . ", " .  $item['SoTKV'] . ", " . $item['SoTienVay'];
+  echo "<br>";
+}
+
+$c118 = $conn->prepare("SELECT a.MaCN, SUM(a.SoTienGui) as Tong
+FROM TaiKhoanGui a
+GROUP BY a.MaCN");
+$c118->execute();
+$c118->setFetchMode(PDO::FETCH_ASSOC);
+$result = $c118->fetchAll();
+echo "1.18. Tính tổng số tiền mà mỗi chi nhánh ngân hàng đang được khách hàng gởi.";
+echo "<br>";
+foreach ($result as $item) {
+  echo $item['MaCN'] . ", " .  $item['Tong'];
+  echo "<br>";
+}
+
+$c119 = $conn->prepare("SELECT a.TenKH, b.SoTienVay, c.SoTienGui
+FROM khachhang a, taikhoanvay b, TaiKhoanGui c
+WHERE a.MaKH=b.MaKH AND a.MaKH=c.MaKH AND a.TenKH LIKE '%Son'");
+$c119->execute();
+$c119->setFetchMode(PDO::FETCH_ASSOC);
+$result = $c119->fetchAll();
+echo "1.19. Xuất thông tin về tài khoản vay và tài khoản gởi hiện có của tất cả các khách hàng có
+tên là 'Son'.";
+echo "<br>";
+foreach ($result as $item) {
+  echo $item['TenKH'] . ", " .  $item['SoTienVay'] . ", " . $item['SoTienGui'];
+  echo "<br>";
+}
+
+$c120 = $conn->prepare("SELECT a.TenKH, a.DiaChi, sum(b.SoTienVay) as TongTien
+FROM khachhang a, taikhoanvay b
+WHERE a.MaKH=b.MaKH
+GROUP BY b.MaKH
+HAVING SUM(b.SoTienVay) > 30000000");
+$c120->execute();
+$c120->setFetchMode(PDO::FETCH_ASSOC);
+$result = $c120->fetchAll();
+echo "1.20. Tìm thông tin về khách hàng có tổng số tiền vay tại tất cả các ngân hàng > 30000000.";
+echo "<br>";
+foreach ($result as $item) {
+  echo $item['TenKH'] . ", " .  $item['DiaChi'] . ", " . $item['TongTien'];
+  echo "<br>";
+}
+
+$c21 = $conn->prepare("SELECT a.TenNH, b.ThanhPhoCN, c.SoTienVay
+FROM nganhang a, chinhanh b, taikhoanvay c
+WHERE a.MaNH=b.MaNH AND b.MaCN=c.MaCN AND c.SoTienVay > (SELECT taikhoanvay.SoTienVay
+FROM taikhoanvay
+WHERE taikhoanvay.SoTienVay = 12000000
+)");
+$c21->execute();
+$c21->setFetchMode(PDO::FETCH_ASSOC);
+$result = $c21->fetchAll();
+echo "2.1. Tìm tất cả các số tài khoản vay thực hiện tại chi nhành của ngân hàng Dau Tu mà số
+tiền vay > 12000000.";
+echo "<br>";
+foreach ($result as $item) {
+  echo $item['TenNH'] . ", " .  $item['ThanhPhoCN'] . ", " . $item['SoTienVay'];
+  echo "<br>";
+}
+
+$c22 = $conn->prepare("SELECT a.TenNH, b.ThanhPhoCN, d.TenKH
+FROM nganhang a, chinhanh b, taikhoanvay c, khachhang d
+WHERE a.MaNH=b.MaNH AND b.MaCN=c.MaCN AND c.MaKH=d.MaKH AND a.TenNH = (SELECT nganhang.TenNH
+FROM nganhang
+WHERE nganhang.TenNH='Ngân Hàng Á Châu'
+)");
+$c22->execute();
+$c22->setFetchMode(PDO::FETCH_ASSOC);
+$result = $c22->fetchAll();
+echo "2.2. Liệt kê tất cả những những khách hành có tài khoản vay tại chi nhánh ngân hàng 'A
+Chau'.";
+echo "<br>";
+foreach ($result as $item) {
+  echo $item['TenNH'] . ", " .  $item['ThanhPhoCN'] . ", " . $item['TenKH'];
+  echo "<br>";
+}
+
+$c23 = $conn->prepare("SELECT a.SoTienVay, a.SoTienGui, b.TenKH
+FROM (SELECT a.SoTienVay, b.SoTienGui, b.MaKH
+FROM taikhoanvay a
+RIGHT JOIN TaiKhoanGui b
+on a.MaKH=b.MaKH
+UNION
+SELECT a.SoTienVay, b.SoTienGui, a.MaKH
+FROM taikhoanvay a
+LEFT JOIN TaiKhoanGui b
+on a.MaKH=b.MaKH) a, khachhang b
+WHERE a.MaKH=b.MaKH");
+$c23->execute();
+$c23->setFetchMode(PDO::FETCH_ASSOC);
+$result = $c23->fetchAll();
+echo "2.3. Tìm tất cả những khách hàng có tài khoản vay, tài khoản gởi hoặc cả hai tai ngân
+hàng.";
+echo "<br>";
+foreach ($result as $item) {
+  echo $item['SoTienVay'] . ", " .  $item['SoTienGui'] . ", " . $item['TenKH'];
+  echo "<br>";
+}
+
+$c24 = $conn->prepare("SELECT a.TenKH, b.SoTienVay,c.SoTienGui
+FROM khachhang a, taikhoanvay b, TaiKhoanGui c
+WHERE a.MaKH=b.MaKH AND a.MaKH=c.MaKH");
+$c24->execute();
+$c24->setFetchMode(PDO::FETCH_ASSOC);
+$result = $c24->fetchAll();
+echo "2.4. Tìm tất cả các khách hàng vừa có tài khoản vay và tài khoản gởi tại ngân hàng.";
+echo "<br>";
+foreach ($result as $item) {
+  echo $item['TenKH'] . ", " .  $item['SoTienVay'] . ", " . $item['SoTienGui'];
+  echo "<br>";
+}
+
+$c25 = $conn->prepare("SELECT a.TenKH
+FROM khachhang a
+WHERE a.MaKH IN (SELECT a.MaKH
+FROM TaiKhoanGui a
+LEFT JOIN taikhoanvay b
+on a.MaKH=b.MaKH
+WHERE b.MaKH IS NULL)");
+$c25->execute();
+$c25->setFetchMode(PDO::FETCH_ASSOC);
+$result = $c25->fetchAll();
+echo "2.5. Tìm tất cả các khách hàng có tài khoản gởi nhưng không có tài khoản vay tại ngân
+hàng.";
+echo "<br>";
+foreach ($result as $item) {
+  echo $item['TenKH'];
+  echo "<br>";
+}
+
+$c26 = $conn->prepare("SELECT AVG(c.SoTienVay) AS TrungBinhTienVay
+FROM chinhanh a, nganhang b, taikhoanvay c
+WHERE a.MaNH=b.MaNH AND b.TenNH='Ngân Hàng Công Thương' AND a.MaCN=c.MaCN");
+$c26->execute();
+$c26->setFetchMode(PDO::FETCH_ASSOC);
+$result = $c26->fetchAll();
+echo "2.6. Tìm giá trị trung bình của số tiền vay tài khoản gởi tại chi nhánh ngân hàng công
+thuơng.";
+echo "<br>";
+foreach ($result as $item) {
+  echo $item['TrungBinhTienVay'];
+  echo "<br>";
+}
+
+$c27 = $conn->prepare("SELECT a.MaCN, b.SoLanGui
+FROM chinhanh a, (SELECT COUNT(a.MaCN) AS SoLanGui, a.MaCN
+FROM TaiKhoanGui a
+GROUP BY a.MaCN
+) b
+WHERE a.MaCN=b.MaCN
+ORDER BY a.MaCN");
+$c27->execute();
+$c27->setFetchMode(PDO::FETCH_ASSOC);
+$result = $c27->fetchAll();
+echo "2.7. Tính số nguời gửi tại mỗi chi nhánh ngân hàng.";
+echo "<br>";
+foreach ($result as $item) {
+  echo $item['MaCN'] . ", " .  $item['SoLanGui'];
+  echo "<br>";
+}
+
+$c28 = $conn->prepare("SELECT AVG(a.SoTienGui) AS SoLanGui, a.MaCN
+FROM TaiKhoanGui a
+GROUP BY a.MaCN
+HAVING AVG(a.SoTienGui) > 5000000");
+$c28->execute();
+$c28->setFetchMode(PDO::FETCH_ASSOC);
+$result = $c28->fetchAll();
+echo "2.8. Tìm các chi nhánh ngân hàng và các giá trị trung bình số tiền gởi với điều kiện giá trị
+trung bình số tiền gởi này phải lớn hơn 5000000.";
+echo "<br>";
+foreach ($result as $item) {
+  echo $item['SoLanGui'] . ", " .  $item['MaCN'];
+  echo "<br>";
+}
+
+$c29 = $conn->prepare("SELECT AVG(a.SoTienGui) AS TienGuiTB, b.ThanhPhoCN
+FROM TaiKhoanGui a, chinhanh b
+WHERE a.MaCN=b.MaCN AND b.ThanhPhoCN='Đà Lạt'
+GROUP BY a.MaCN
+HAVING COUNT(a.MaCN) > 1");
+$c29->execute();
+$c29->setFetchMode(PDO::FETCH_ASSOC);
+$result = $c29->fetchAll();
+echo "2.9. Tìm giá trị trung bình số tiền gởi của tất cả những người có tài khoản gởi sống ở thành
+phố “Da Lat” và họ có ít nhất 2 tài khoản.";
+echo "<br>";
+foreach ($result as $item) {
+  echo $item['TienGuiTB'] . ", " .  $item['ThanhPhoCN'];
+  echo "<br>";
+}
+
+$c210 = $conn->prepare("SELECT b.TenKH, a.MaCN AS CNGoi
+FROM TaiKhoanGui a, khachhang b
+WHERE a.MaKH=b.MaKH AND a.MaKH IN (SELECT a.MaKH
+FROM taikhoanvay a, chinhanh b
+WHERE a.MaCN=b.MaCN AND a.MaCN='CN05')");
+$c210->execute();
+$c210->setFetchMode(PDO::FETCH_ASSOC);
+$result = $c210->fetchAll();
+echo "2.10. Tìm tất cả các khách hàng có tài khoản vay lẫn tài khoản gởi tại chi nhánh ngân hàng
+“CN05”.";
+echo "<br>";
+foreach ($result as $item) {
+  echo $item['TenKH'] . ", " .  $item['CNGoi'];
+  echo "<br>";
+}
+
+$c211 = $conn->prepare("SELECT a.TenKH
+FROM khachhang a
+WHERE a.TenKH NOT LIKE '%Thao' AND a.TenKH NOT LIKE '%Son' AND a.TenKH IN
+(
+    SELECT b.TenKH
+FROM (SELECT a.SoTienVay, b.SoTienGui, b.MaKH
+FROM taikhoanvay a
+RIGHT JOIN TaiKhoanGui b
+on a.MaKH=b.MaKH
+UNION
+SELECT a.SoTienVay, b.SoTienGui, a.MaKH
+FROM taikhoanvay a
+LEFT JOIN TaiKhoanGui b
+on a.MaKH=b.MaKH) a, khachhang b
+WHERE a.MaKH=b.MaKH
+)");
+$c211->execute();
+$c211->setFetchMode(PDO::FETCH_ASSOC);
+$result = $c211->fetchAll();
+echo "2.11. Tìm tất cả các khách hàng có tài khoản tại ngân hàng nhưng tên của họ không phải là
+“Thao” cũng không phải là “Son”.";
+echo "<br>";
+foreach ($result as $item) {
+  echo $item['TenKH'];
+  echo "<br>";
+}
+
+$c212 = $conn->prepare("SELECT a.MaCN
+FROM chinhanh a
+WHERE a.TaiSan > (SELECT MIN(a.TaiSan)
+FROM chinhanh a
+WHERE a.ThanhPhoCN='Đà Lạt') AND a.ThanhPhoCN NOT LIKE 'Đà Lạt'
+ORDER BY a.MaCN");
+$c212->execute();
+$c212->setFetchMode(PDO::FETCH_ASSOC);
+$result = $c212->fetchAll();
+echo "2.12. Tìm tên tất cả các chi nhánh ngân hàng có tài sản lớn hơn ít nhất một tài sản của chi
+nhánh ngân hàng tại “Da Lat”.";
+echo "<br>";
+foreach ($result as $item) {
+  echo $item['MaCN'];
+  echo "<br>";
+}
+
+$c213 = $conn->prepare("SELECT a.MaCN
+FROM chinhanh a
+WHERE a.TaiSan > (SELECT SUM(a.TaiSan)
+FROM chinhanh a
+WHERE a.ThanhPhoCN='Đà Lạt') AND a.ThanhPhoCN NOT LIKE 'Đà Lạt'
+ORDER BY a.MaCN");
+$c213->execute();
+$c213->setFetchMode(PDO::FETCH_ASSOC);
+$result = $c213->fetchAll();
+echo "2.13. Tìm những chi nhánh ngân hàng mà tài sản của chúng lớn hơn tài sản của tất cả các
+chi nhánh ngân hàng tại “Da Lat”.";
+echo "<br>";
+foreach ($result as $item) {
+  echo $item['MaCN'];
+  echo "<br>";
+}
+
+$c214 = $conn->prepare("SELECT AVG(a.SoTienGui) as avg_rate, a.MaCN
+FROM TaiKhoanGui a
+GROUP BY a.MaCN
+ORDER BY AVG(a.SoTienGui) DESC
+LIMIT 1");
+$c214->execute();
+$c214->setFetchMode(PDO::FETCH_ASSOC);
+$result = $c214->fetchAll();
+echo "2.14. Tìm chi nhánh có trung bình số tiền gởi lớn nhất.";
+echo "<br>";
+foreach ($result as $item) {
+  echo $item['avg_rate'] . ", " .  $item['MaCN'];
+  echo "<br>";
+}
+
+$c215 = $conn->prepare("SELECT c.TenKH, b.ThanhPhoCN
+FROM TaiKhoanGui a, chinhanh b, khachhang c
+WHERE a.MaCN=b.MaCN AND b.ThanhPhoCN='Đà Lạt' AND c.MaKH=a.MaKH");
+$c215->execute();
+$c215->setFetchMode(PDO::FETCH_ASSOC);
+$result = $c215->fetchAll();
+echo "2.15. Tìm tất cả các khách hàng có tài khoản gởi tại mọi chi nhánh ngân hàng tọa lạc tại
+“Da Lat”.";
+echo "<br>";
+foreach ($result as $item) {
+  echo $item['TenKH'] . ", " .  $item['ThanhPhoCN'];
+  echo "<br>";
+}
+
+$c216 = $conn->prepare("SELECT a.ThanhPhoCN
+FROM chinhanh a, khachhang b, TaiKhoanGui c
+WHERE a.MaCN=c.MaCN AND c.MaKH=b.MaKH AND b.TenKH='Ho Thanh Son'");
+$c216->execute();
+$c216->setFetchMode(PDO::FETCH_ASSOC);
+$result = $c216->fetchAll();
+echo "2.16. Tìm tất cả các chi nhành ngân hàng mà khách hàng có tên “Ho Thanh Son” có tài
+khoản gởi tại đó.";
+echo "<br>";
+foreach ($result as $item) {
+  echo $item['ThanhPhoCN'];
+  echo "<br>";
+}
+
+$c217 = $conn->prepare("SELECT a.TenKH
+FROM khachhang a
+WHERE a.MaKH IN (SELECT a.MaKH
+FROM TaiKhoanGui a, chinhanh b, nganhang c
+WHERE a.MaCN=b.MaCN AND b.MaNH=c.MaNH AND c.TenNH='Ngân Hàng Nông Nghiệp' AND a.MaKH IN
+(
+SELECT a.MaKH
+FROM TaiKhoanGui a
+GROUP BY a.MaKH
+HAVING COUNT(a.MaKH)=1
+))");
+$c217->execute();
+$c217->setFetchMode(PDO::FETCH_ASSOC);
+$result = $c217->fetchAll();
+echo "2.17. Tìm tất cả những khách hàng chỉ có một tài khoản gởi tại chi nhành ngân hàng nông
+nghiệp.";
+echo "<br>";
+foreach ($result as $item) {
+  echo $item['TenKH'];
+  echo "<br>";
+}
+
+$c218 = $conn->prepare("SELECT a.TenKH
+FROM khachhang a
+WHERE a.MaKH IN (SELECT a.MaKH
+FROM TaiKhoanGui a, chinhanh b, nganhang c
+WHERE a.MaCN=b.MaCN AND b.MaNH=c.MaNH AND c.TenNH='Ngân Hàng Nông Nghiệp' AND a.MaKH IN
+(
+SELECT a.MaKH
+FROM TaiKhoanGui a
+GROUP BY a.MaKH
+))");
+$c218->execute();
+$c218->setFetchMode(PDO::FETCH_ASSOC);
+$result = $c218->fetchAll();
+echo "2.18. Tìm tất cả các khách hàng có ít nhất một tài khoản gởi tại chi nhánh ngân hàng nông
+nghiệp.";
+echo "<br>";
+foreach ($result as $item) {
+  echo $item['TenKH'];
+  echo "<br>";
+}
+
+$c219 = $conn->prepare("SELECT a.TenKH
+FROM khachhang a, taikhoanvay b, TaiKhoanGui c, chinhanh d, nganhang e
+WHERE a.MaKH=b.MaKH AND a.MaKH=c.MaKH AND a.DiaChi LIKE '%Da Lat' AND c.MaCN=d.MaCN AND d.MaNH=e.MaNH AND e.TenNH='Ngân Hàng Ngoại Thương'");
+$c219->execute();
+$c219->setFetchMode(PDO::FETCH_ASSOC);
+$result = $c219->fetchAll();
+echo "2.19. Tìm tất cả các khách hàng địa chỉ ở Da Lat và có cả tài khoản vay và gởi tài khoản gởi
+tại Ngân Hàng Ngoại Thương.";
+echo "<br>";
+foreach ($result as $item) {
+  echo $item['TenKH'];
+  echo "<br>";
+}
+
+$c220 = $conn->prepare("SELECT b.TenKH
+FROM TaiKhoanGui a, khachhang b
+WHERE a.MaKH=b.MaKH
+GROUP BY a.MaKH
+ORDER BY SUM(a.SoTienGui) DESC
+LIMIT 1");
+$c220->execute();
+$c220->setFetchMode(PDO::FETCH_ASSOC);
+$result = $c220->fetchAll();
+echo "2.20. Tìm thông tin về khách hàng và số tiền gởi của khách hàng có số tiền trong tài khoản
+gởi là lớn nhất";
+echo "<br>";
+foreach ($result as $item) {
+  echo $item['TenKH'];
+  echo "<br>";
+}
+
+$c221 = $conn->prepare("SELECT a.SoTienVay, a.SoTienGui, b.TenKH
+FROM (SELECT a.SoTienVay, b.SoTienGui, b.MaKH
+FROM taikhoanvay a
+RIGHT JOIN TaiKhoanGui b
+on a.MaKH=b.MaKH
+UNION
+SELECT a.SoTienVay, b.SoTienGui, a.MaKH
+FROM taikhoanvay a
+LEFT JOIN TaiKhoanGui b
+on a.MaKH=b.MaKH) a, khachhang b
+WHERE a.MaKH=b.MaKH");
+$c221->execute();
+$c221->setFetchMode(PDO::FETCH_ASSOC);
+$result = $c221->fetchAll();
+echo "2.21. Tìm tất cả những khách hàng có tài khoản vay, tài khoản gởi hoặc cả hai tại ngân
+hàng.";
+echo "<br>";
+foreach ($result as $item) {
+  echo $item['SoTienVay'] . ", " .  $item['SoTienGui'] . ", " . $item['TenKH'];
+  echo "<br>";
+}
+
+$c222 = $conn->prepare("SELECT b.TenKH, COUNT(a.MaKH) AS SoTaiKhoan
+FROM TaiKhoanGui a, khachhang b
+WHERE a.MaKH=b.MaKH
+GROUP BY a.MaKH
+HAVING COUNT(a.MaKH) > 1");
+$c222->execute();
+$c222->setFetchMode(PDO::FETCH_ASSOC);
+$result = $c222->fetchAll();
+echo "2.22. Tìm khách hàng có hơn một tài khoản gởi tại ngân hàng.";
+echo "<br>";
+foreach ($result as $item) {
+  echo $item['TenKH'] . ", " . $item['SoTaiKhoan'];
+  echo "<br>";
+}
+
+$c223 = $conn->prepare("SELECT b.TenKH, SUM(a.SoTienGui) AS MaxTongTien
+FROM TaiKhoanGui a, khachhang b, chinhanh c, nganhang d
+WHERE a.MaKH=b.MaKH AND a.MaCN=c.MaCN AND c.MaNH=d.MaNH AND d.TenNH='Ngân Hàng Á Châu'
+GROUP BY a.MaKH
+ORDER BY SUM(a.SoTienGui) DESC
+LIMIT 1");
+$c223->execute();
+$c223->setFetchMode(PDO::FETCH_ASSOC);
+$result = $c223->fetchAll();
+echo "2.23. Tìm khách hàng có số tiền gởi lớn nhất ở ngân hàng Á Châu.";
+echo "<br>";
+foreach ($result as $item) {
+  echo $item['TenKH'] . ", " . $item['MaxTongTien'];
+  echo "<br>";
+}
+?>

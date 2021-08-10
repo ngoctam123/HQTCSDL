@@ -1,0 +1,196 @@
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>Bài lab thực hành </title>
+		<style type="text/css">
+		
+			body {
+				margin:0;
+				padding:0;
+				font-family: Sans-Serif;
+				line-height: 1.5em;
+			}
+			
+			header {
+				background: #ccc;
+				height: 100px;
+			}
+			
+			header h1 {
+				margin: 0;
+				padding-top: 15px;
+			}
+			
+			main {
+				padding-bottom: 10010px;
+				margin-bottom: -10000px;
+				float: left;
+				width: 100%;
+			}
+			
+			nav {
+				padding-bottom: 10010px;
+				margin-bottom: -10000px;
+				float: left;
+				width: 230px;
+				margin-left: -230px;
+				background: #eee;
+			}
+			
+			footer {
+				clear: left;
+				width: 100%;
+				background: #ccc;
+				text-align: center;
+				padding: 4px 0;
+			}
+	
+			#wrapper {
+				overflow: hidden;
+			}
+						
+			#content {
+				margin-right: 230px; /* Same as 'nav' width */
+			}
+			
+			.innertube {
+				margin: 26px; /* Padding for content */
+				margin-top: 0;
+                
+			}
+		
+			p {
+				color: #555;
+			}
+	
+			nav ul {
+				list-style-type: none;
+				margin: 0;
+				padding: 0;
+			}
+			
+			nav ul a {
+				color: darkgreen;
+				text-decoration: none;
+			}
+            code{
+                color: brown;
+            }
+		
+		</style>
+		
+</head>
+	
+<body>		
+
+	<header>
+		<div class="innertube">
+			<h1><a href="index.html">Bài lab thực hành</a></h1>
+		</div>
+	</header>
+		
+	<div id="wrapper">
+	
+		<main>
+			<div id="content">
+				<div class="innertube">
+					<h1>Các bài lab thực hành</h1>
+					<h2>Hệ quản trị cơ sở dữ liệu</h2>
+                    <h3>Lab 07: Sử dụng DDL định nghĩa dữ liệu cho đối tượng Sinh Viên</h3>
+                    <h4>1. SQL Server</h4>
+                    <p>•	Định nghĩa dữ liệu cho đối tượng Sinh Viên trong SQL server, My SQL và MongoDB.
+                        Ví dụ: đối tượng Sinh Viên gồm các thông tin sau: MSSV, Họ Tên, Năm Sinh, Điểm môn 1, Điểm môn 2, Điểm môn 3, Email, Điện thoại.
+                        </p>
+                    <code>create table SinhVien (<br>
+                        MSSV char(8) primary key,<br>
+                        Hoten nvarchar(30) not null,<br>
+                        Namsinh int,<br>
+                        DiemMon1 float,<br>
+                        DiemMon2 float,<br>
+                        DiemMon3 float,<br>
+                        Email char(30),<br>
+                        Dienthoai char(11)<br>
+                      )<br>
+                      </code>
+                    <img src="IMG_HQTCSDL/lab7_1.png" alt="lab7_1">
+                    <h4>2. Mongodb</h4>
+                    <p>•	Ta chỉ có thể định nghĩa đối tượng Sinh viên cho mongodb thông qua schema của mongoose (thư viện npm trong nodejs)
+                        import mongoose from 'mongoose';
+                        </p>
+                    <code>import mongoose from 'mongoose';<br>
+                        const { Schema } = mongoose;<br>
+                        
+                        const SinhVienSchema = new Schema({<br>
+                          MSSV: String,<br>
+                          Hoten: String,<br>
+                          Namsinh: Number,<br>
+                          DiemMon1: Number,<br>
+                          DiemMon2: Number,<br>
+                          DiemMon3: Number,<br>
+                          Email: String,<br>
+                          Dienthoat: String<br>
+                        });<br>
+                        use quanlysinhvien;<br>
+                        db.createCollection("SinhVien");<br>
+                    </code>
+                    <img src="IMG_HQTCSDL/lab7_2.png" alt="lab7_2">
+                    <h4>3. MySQL</h4>
+
+                    
+                    <code>create table SinhVien (<br>
+                        MSSV char(8) primary key,<br>
+                        Hoten varchar(30) not null,<br>
+                        Namsinh int,<br>
+                        DiemMon1 float,<br>
+                        DiemMon2 float,<br>
+                        DiemMon3 float,<br>
+                        Email char(30),<br>
+                        Dienthoai char(11)<br>
+                      )<br>
+                    </code>
+                    <img src="IMG_HQTCSDL/lab7_3.png" alt="lab7_3">
+                    <p>•	Sau khi import ta được:</p>
+                    
+                    
+                    <img src="IMG_HQTCSDL/lab7_4.png" alt="Lab7_4">
+                    
+
+			</div>
+		</main>
+		
+		<nav>
+			<div class="innertube">
+				<h3>Hệ quản trị cơ sở dữ liệu</h3>
+				<ul>
+					<li><a href="HQTCSDL/Lab 1.html">Lab 01</a></li>
+					<li><a href="HQTCSDL/Lab 2.html">Lab 02</a></li>
+					<li><a href="HQTCSDL/Lab 3.html">Lab 03</a></li>
+					<li><a href="HQTCSDL/Lab 4.html">Lab 04</a></li>
+					<li><a href="HQTCSDL/Lab 5.html">Lab 05</a></li>
+					<li><a href="HQTCSDL/Lab 6.html">Lab 06</a></li>
+					<li><a href="HQTCSDL/Lab 7.html">Lab 07</a></li>
+					<li><a href="HQTCSDL/Lab 8.html">Lab 08</a></li>
+					<li><a href="HQTCSDL/Lab 9&10.html">Lab 9& Lab 10</a></li>
+					
+				</ul>
+				<h3>Phát triển ứng dụng web</h3>
+				<ul>
+					<li><a href="#">Lab 01</a></li>
+					<li><a href="#">Lab 02</a></li>
+					<li><a href="#">Lab 03</a></li>
+					<li><a href="#">Lab 04</a></li>
+					<li><a href="#">Lab 05</a></li>
+				</ul>
+				<h3>Coming soon</h3>
+			</div>
+		</nav>
+	
+	</div>
+		
+	<footer>
+		<div class="innertube">
+			<h3>Đà Lạt University</h3>
+		</div>
+	</footer>
+</body>
+</html>

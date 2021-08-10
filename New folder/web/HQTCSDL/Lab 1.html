@@ -1,0 +1,186 @@
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>Bài lab thực hành </title>
+		<style type="text/css">
+		
+			body {
+				margin:0;
+				padding:0;
+				font-family: Sans-Serif;
+				line-height: 1.5em;
+			}
+			
+			header {
+				background: #ccc;
+				height: 100px;
+			}
+			
+			header h1 {
+				margin: 0;
+				padding-top: 15px;
+			}
+			
+			main {
+				padding-bottom: 10010px;
+				margin-bottom: -10000px;
+				float: left;
+				width: 100%;
+			}
+			
+			nav {
+				padding-bottom: 10010px;
+				margin-bottom: -10000px;
+				float: left;
+				width: 230px;
+				margin-left: -230px;
+				background: #eee;
+			}
+			
+			footer {
+				clear: left;
+				width: 100%;
+				background: #ccc;
+				text-align: center;
+				padding: 4px 0;
+			}
+	
+			#wrapper {
+				overflow: hidden;
+			}
+						
+			#content {
+				margin-right: 230px; /* Same as 'nav' width */
+			}
+			
+			.innertube {
+				margin: 26px; /* Padding for content */
+				margin-top: 0;
+                
+			}
+		
+			p {
+				color: #555;
+			}
+	
+			nav ul {
+				list-style-type: none;
+				margin: 0;
+				padding: 0;
+			}
+			
+			nav ul a {
+				color: darkgreen;
+				text-decoration: none;
+			}
+		
+		</style>
+		
+</head>
+	
+<body>		
+
+	<header>
+		<div class="innertube">
+			<h1><a href="index.html">Bài lab thực hành</a></h1>
+		</div>
+	</header>
+		
+	<div id="wrapper">
+	
+		<main>
+			<div id="content">
+				<div class="innertube">
+					<h1>Các bài lab thực hành</h1>
+					<h2>Hệ quản trị cơ sở dữ liệu</h2>
+                    <h3>Lab 01: Tải và cài đặt sql server trên máy chủ cục bộ</h3>
+                    <h4>1. Giới thiệu về SQL Server</h4>
+                    <p>•	SQL Server hiện có nhiều phiên bản khác nhau. Dưới đây là danh sách các phiên bản cùng với tính năng của từng phiên bản.</p>
+                    <table border="1" cellpadding="5" cellspacing="5" >
+                        <tr>
+                            <th>Loại</th>
+                            <th>Mô tả</th>
+                        </tr>
+                        <tr>
+                            <td>Enterprise</td>
+                            <td>bản cao cấp nhất với đầy đủ tính năng</td>
+                        </tr>
+                        <tr>
+                            <td>Standard</td>
+                            <td>ít tính năng hơn Enterprise, sử dụng khi không cần dùng tới các tính năng nâng cao</td>
+                        </tr>
+                        <tr>
+                            <td>Workgroup</td>
+                            <td>phù hợp cho các công ty lớn với nhiều văn phòng làm việc từ xa</td>
+                        </tr>
+                        <tr>
+                            <td>Web</td>
+                            <td>thiết kế riêng cho các ứng dụng web</td>
+                        </tr>
+                        <tr>
+                            <td>Developer</td>
+                            <td>tương tự như Enterprise nhưng chỉ cấp quyền cho một người dùng duy nhất để phát triển, thử nghiệm, demo. Có thể dễ dàng nâng cấp lên bản Enterprise mà không cần cài lại</td>
+                        </tr>
+                        <tr>
+                            <td>Express</td>
+                            <td>bản này chỉ dùng ở mức độ đơn giản, tối đa 1 CPU và bộ nhớ 1GB, kích thước tối đa của cơ sở dữ liệu là 10GB (miễn phí, nhẹ, phù hợp để học)</td>
+                        </tr>
+                        <tr>
+                            <td>Compact</td>
+                            <td>nhúng miễn phí vào các môi trường phát triển ứng dụng web. Kích thước tối đa của cơ sở dữ liệu là 4GB</td>
+                        </tr>
+                        <tr>
+                            <td>Datacenter</td>
+                            <td>thay đổi lớn trên SQL Server 2008 R2 chính là bản Datacenter Edition. Không giới hạn bộ nhớ và hỗ trợ hơn 25 bản cài</td>
+                        </tr>
+                        <tr>
+                            <td>Business Intelligence</td>
+                            <td>Business Intelligence Edition mới được giới thiệu trên SQL Server 2012. Phiên bản này có các tính năng của bản Standard và hỗ trợ một số tính năng nâng cao về BI như Power View và PowerPivot nhưng không hỗ trợ những tính năng nâng cao về mức độ sẵn sàng như AlwaysOn Availability Groups…</td>
+                        </tr>
+                        <tr>
+                            <td>Enterprise Evaluation</td>
+                            <td>bản SQL Server Evaluation Edition là lựa chọn tuyệt vời để dùng được mọi tính năng và có được bản cài miễn phí của SQL Server để học tập và phát triển. Phiên bản này có thời gian hết hạn là 6 tháng từ ngày cài</td>
+                        </tr>
+                    </table>
+                    <h4>2. Cài đặt SQLServer</h4>
+                    <img src="IMG_HQTCSDL/lab1_1.png" alt="Lab1">
+
+			</div>
+		</main>
+		
+		<nav>
+			<div class="innertube">
+				<h3>Hệ quản trị cơ sở dữ liệu</h3>
+				<ul>
+					<li><a href="HQTCSDL/Lab 1.html">Lab 01</a></li>
+					<li><a href="HQTCSDL/Lab 2.html">Lab 02</a></li>
+					<li><a href="HQTCSDL/Lab 3.html">Lab 03</a></li>
+					<li><a href="HQTCSDL/Lab 4.html">Lab 04</a></li>
+					<li><a href="HQTCSDL/Lab 5.html">Lab 05</a></li>
+					<li><a href="HQTCSDL/Lab 6.html">Lab 06</a></li>
+					<li><a href="HQTCSDL/Lab 7.html">Lab 07</a></li>
+					<li><a href="HQTCSDL/Lab 8.html">Lab 08</a></li>
+					<li><a href="HQTCSDL/Lab 9&10.html">Lab 9& Lab 10</a></li>
+					
+				</ul>
+				<h3>Phát triển ứng dụng web</h3>
+				<ul>
+					<li><a href="#">Lab 01</a></li>
+					<li><a href="#">Lab 02</a></li>
+					<li><a href="#">Lab 03</a></li>
+					<li><a href="#">Lab 04</a></li>
+					<li><a href="#">Lab 05</a></li>
+				</ul>
+				<h3>Coming soon</h3>
+			</div>
+		</nav>
+	
+	</div>
+		
+	<footer>
+		<div class="innertube">
+			<h3>Đà Lạt University</h3>
+		</div>
+	</footer>
+</body>
+</html>

@@ -1,0 +1,125 @@
+-- 1. PROCEDURE, FUNCTION
+-- 1.1
+delimiter //
+USE qlnh//
+create procedure them(Manh int, Macn varchar(4), ThanhPhocn varchar(45), Taisan float)
+begin
+	insert into qlnh.chinhanh(MaNH, MaCN, ThanhPhoCN, TaiSan) values (Manh, Macn, ThanhPhocn, Taisan);
+end //
+delimiter ;
+call qlnh.them_chinhanh('10','CN05','Hai Phong','20000000');
+delimiter //
+USE qlnh//
+create procedure them_nganhang(Manh int,Tennh varchar(45))
+begin
+	insert into qlnh.chinhanh(MaNH, TenNH) values (Manh, TenNH);
+end //
+delimiter ;
+call qlnh.them_nganhang('10','Ngan Hang agribank');
+
+-- 1.2
+delimiter //
+USE qlnh//
+create procedure sua_nganhang(Manh int,Tennh varchar(45))
+begin
+	SET SQL_SAFE_UPDATES = 0;
+	update qlnh.nganhang set MaNH = Manh, TenNH = Tennh where MaNH = '5';
+end //
+delimiter ;
+call qlnh.sua_nganhang('6','Ngan Hang Vietcombank');
+delimiter //
+USE qlnh //
+create procedure sua_khachhang(Makh int, Tenkh varchar(45), Diachi varchar(45))
+begin
+	SET SQL_SAFE_UPDATES = 0;
+	update qlnh.khachhang set MaKH = Makh, TenKH = Tenkh, DiaChi = Diachi where MaKH = '111222333';
+end //
+delimiter ;
+call qlnh.sua_khachhang('1234','Ho Van Tham','95 Ly Nam De');
+
+-- 1.3
+delimiter //
+USE qlnh//
+create procedure xoa_khachhang()
+begin
+	declare Makh int;
+	delete from qlnh.khachhang where MaKH = Makh;
+end //
+delimiter ;
+set Makh = '111222333';
+call xoa_khachhang();
+
+delimiter //
+USE qlnh//
+create procedure xoa_taikhoangoi()
+begin
+	declare TKG int;
+	delete from qlnh.taikhoangoi where SoTKG = TKG;
+end //
+delimiter ;
+set TKG = '00001A';
+call xoa_taikhoangoi();
+
+-- 1.4
+delimiter //
+USE qlnh//
+create function Sotk(Sotkg varchar(45))
+returns nvarchar(255)
+begin
+declare kq nvarchar(255);
+	if Sotkg is null then
+		set kq = (select concat('Kết quả: 0') as KiemTra);
+	else
+		set kq = (select MaKH, SoTienGoi from qlnh.taikhoangoi where SoTKG = Sotkg) ;
+	end if;
+    return kq;
+end//
+delimiter ;
+select MaKH, SoTienGoi, Sotk('CN01') from qlnh.taikhoangoi;
+
+-- 1.5
+delimiter //
+USE qlnh//
+create function MaKhachHang(Makh int)
+returns nvarchar(255)
+begin
+declare kq nvarchar(255);
+	if  Makh is null then
+		set kq = (select concat('Kết quả: 0') as KiemTra);
+	else
+		set kq = (select TenKH, DiaChi from qlnh.khachhang where MaKH = Makh) ;
+	end if;
+    return kq;
+end//
+delimiter ;
+select TenKH, DiaChi, MaKhachHang('111222333') from qlnh.khachhang;
+
+-- 2. VIEW
+-- 2.1
+CREATE VIEW ThanhPho_VIEW AS
+SELECT ThanhPhoCN
+FROM  chinhanh a, nganhang b
+WHERE a.MaNH = b.MaNH and b.TenNH like 'Ngan Hang Cong Thuong'
+WITH CHECK OPTION;
+select * from thanhpho_VIEW;
+
+-- 2.2
+CREATE VIEW NganHang_VIEW AS
+SELECT TenNH, TaiSan
+FROM  chinhanh a, nganhang b
+WHERE a.MaNH = b.MaNH 
+WITH CHECK OPTION;
+select * from NganHang_VIEW;
+
+-- 2.3
+CREATE VIEW CNTSLonNhat_VIEW AS
+SELECT MaCN, MAX(TaiSan)
+FROM  chinhanh ;
+select * from CNTSLonNhat_VIEW;
+
+-- 2.4
+CREATE VIEW TongSoTien_VIEW AS
+SELECT a.MaCN, SUM(a.SoTienGoi) as TongSoTien
+FROM  qlnh.taikhoangoi a
+GROUP BY a.MaCN;
+select * from TongSoTien_VIEW;

@@ -1,0 +1,16 @@
+.swapper{
+    width: 90%;
+    margin: 0px auto;
+    
+}
+th{
+    text-align: center;
+}
+.xanh{
+    color: green;
+    font-size: x-large;
+}
+.do{
+    color: red;
+    font-size: x-large;
+}
